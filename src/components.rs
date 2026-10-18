@@ -33,7 +33,7 @@ impl Component for DiskComponent {
     fn render(&self) -> String {
         let mut render_str = String::from("Disk: ");
         if self.mount.len() > 1 {
-            render_str.push_str("[ ");
+            render_str.push_str("[");
         }
 
         for (n, path) in self.mount.iter().enumerate() {
@@ -55,7 +55,7 @@ impl Component for DiskComponent {
         }
 
         if self.mount.len() > 1 {
-            render_str.push_str(" ]");
+            render_str.push_str("]");
         }
 
         render_str

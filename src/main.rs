@@ -81,8 +81,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     //delete WM_NAME, and dwm will show default string
     conn.delete_property(root, AtomEnum::WM_NAME.into())?;
-    conn.flush()?;
-
+    conn.sync()?;
+    // let reply = conn.get_property(
+    //     false,
+    //     root,
+    //     AtomEnum::WM_NAME,
+    //     AtomEnum::ANY,
+    //     0,
+    //     1024,
+    // )?.reply()?;    
+    // println!("exists: {}", reply.type_ != AtomEnum::NONE.into());
     
     Ok(())
 
