@@ -6,4 +6,5 @@ edition = "2024"
 [dependencies]
 chrono = "0.4.45"
 nix = { version = "0.31.3", features = ["fs"] }
+signal-hook = "0.4.5"
 x11rb = "0.14.0"

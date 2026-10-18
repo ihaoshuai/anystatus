@@ -1,5 +1,5 @@
-use x11rb::{connection::Connection, protocol::xproto::AtomEnum, wrapper::ConnectionExt};
-use std::{env, time::{Duration, Instant}};
+use x11rb::{connection::Connection, protocol::xproto::{AtomEnum, ConnectionExt}, wrapper::ConnectionExt as WrapperConnectionExt};
+use std::{env, sync::{Arc, atomic::{AtomicBool, Ordering}}, time::{Duration, Instant}};
 use crate::components::{ComponentRunner, DiskComponent, NetComponent, ProxyComponent, TimeComponent, VolComponent};
 mod components;
 mod utils;
@@ -42,11 +42,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+    let term = Arc::new(AtomicBool::new(false));
+    signal_hook::flag::register( signal_hook::consts::SIGINT, Arc::clone(&term))?;
+    signal_hook::flag::register( signal_hook::consts::SIGTERM, Arc::clone(&term))?;
+    
     let (conn, screen_num) = x11rb::connect(None)?;
     let root = conn.setup().roots[screen_num].root;
     let begin_time = Instant::now();
     let mut status_vec: Vec<String> = vec![String::new(); components.len()];
-    loop {
+    while !term.load(Ordering::Relaxed) {
         let mut need_change = false;
         let t = begin_time.elapsed().as_secs();
         for (n, component) in components.iter().enumerate() {
@@ -74,6 +78,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         std::thread::sleep(Duration::from_secs(1));
     }
+
+    //delete WM_NAME, and dwm will show default string
+    conn.delete_property(root, AtomEnum::WM_NAME.into())?;
+    conn.flush()?;
+
+    
+    Ok(())
 
 }
 
