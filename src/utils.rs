@@ -40,3 +40,13 @@ pub fn is_interface_up(interface: &str) -> bool {
     }
     false
 }
+
+pub fn get_battery(bat: &str) -> Option<u32> {
+    let path = format!("/sys/class/power_supply/{}/capacity", bat);
+    if let Ok(content) = std::fs::read_to_string(path) {
+        if let Ok(percent) = content.trim().parse::<u32>() {
+            return Some(percent);
+        }
+    }
+    return None;
+}

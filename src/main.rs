@@ -1,6 +1,6 @@
 use x11rb::{connection::Connection, protocol::xproto::{AtomEnum, ConnectionExt}, wrapper::ConnectionExt as WrapperConnectionExt};
 use std::{env, sync::{Arc, atomic::{AtomicBool, Ordering}}, time::{Duration, Instant}};
-use crate::components::{ComponentRunner, DiskComponent, NetComponent, ProxyComponent, TimeComponent, VolComponent};
+use crate::components::{BatteryComponent, ComponentRunner, DiskComponent, NetComponent, ProxyComponent, TimeComponent, VolComponent};
 mod components;
 mod utils;
 
@@ -17,6 +17,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         ComponentRunner::new(Box::new(NetComponent{
             interface: "wlp3s0"
+        }), 5),
+
+        ComponentRunner::new(Box::new(BatteryComponent{
+            bat: "BAT1"
         }), 5),
     
         ComponentRunner::new(Box::new(DiskComponent{

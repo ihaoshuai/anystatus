@@ -1,5 +1,5 @@
 
-use crate::utils::{disk_available, get_time, is_interface_up, run_command, run_shell};
+use crate::utils::{disk_available, get_battery, get_time, is_interface_up, run_command, run_shell};
 
 
 const HIGHLIGHT: &str = "^c#63be34^";
@@ -108,6 +108,23 @@ impl Component for NetComponent {
             return format!("Net: {HIGHLIGHT}ON({}){NORMAL}", self.interface);
         }
         return format!("Net: {WARN}OFF({}){NORMAL}", self.interface);
+    }
+}
+
+
+pub struct BatteryComponent {
+    pub bat: &'static str
+}
+impl Component for BatteryComponent {
+    fn render(&self) -> String {
+        let mut color = HIGHLIGHT;
+        if let Some(percent) = get_battery(self.bat) {
+            if percent <= 20 {
+                color = WARN;
+            }
+            return format!("Bat: {color}{}%{NORMAL}", percent);
+        }
+        return format!("Bat: {WARN}unknown{NORMAL}");
     }
 }
 
